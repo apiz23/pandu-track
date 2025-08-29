@@ -120,6 +120,13 @@
         @apply bg-background text-foreground;
     }
 
+    .focus\:ring-white:focus {
+        --tw-ring-color: rgba(255, 255, 255, 0.5) !important;
+    }
+    .focus\:border-white:focus {
+        border-color: rgba(255, 255, 255, 0.8) !important;
+    }
+
     @keyframes blob {
         0% {
             transform: translate(0px, 0px) scale(1);

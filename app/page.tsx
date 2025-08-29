@@ -75,17 +75,13 @@ export default function Home() {
 
     return (
         <>
-            <main className="min-h-screen flex items-center justify-center px-4 py-8 bg-gray-900 relative overflow-hidden">
-                <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-900 rounded-full filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
-                <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-blue-900 rounded-full filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
-                <div className="absolute bottom-1/4 left-1/3 w-96 h-96 bg-indigo-900 rounded-full filter blur-3xl opacity-20 animate-blob"></div>
-
-                <Card className="w-full max-w-md shadow-2xl rounded-xl overflow-hidden border border-gray-800 backdrop-blur-md bg-gray-800/80 relative z-10">
-                    <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-purple-600 to-blue-600"></div>
+            <main className="min-h-screen flex items-center justify-center px-4 py-8 relative overflow-hidden">
+                <Card className="w-full max-w-md shadow-2xl rounded-lg overflow-hidden border border-white/20 bg-neutral-800 relative z-10">
+                    <div className="absolute inset-0 border border-white/10 rounded-lg pointer-events-none"></div>
 
                     <CardHeader className="pb-4 pt-8">
                         <div className="flex justify-center mb-4">
-                            <div className="bg-gradient-to-br from-purple-600 to-blue-600 p-4 rounded-2xl shadow-lg">
+                            <div className="p-3 rounded-lg border border-white/30 bg-black">
                                 <Calendar className="h-8 w-8 text-white" />
                             </div>
                         </div>
@@ -104,9 +100,9 @@ export default function Home() {
                             <div className="space-y-2">
                                 <Label
                                     htmlFor="matric"
-                                    className="text-sm font-medium text-gray-300 flex items-center"
+                                    className="text-sm font-medium text-white flex items-center"
                                 >
-                                    <User className="h-4 w-4 mr-2 text-purple-400" />
+                                    <User className="h-4 w-4 mr-2 text-white" />
                                     Matric Number
                                 </Label>
                                 <Input
@@ -117,15 +113,15 @@ export default function Home() {
                                         setMatric(e.target.value.toUpperCase())
                                     }
                                     placeholder="e.g., A12345"
-                                    className="w-full rounded-lg border-gray-700 bg-gray-900 text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 px-4 py-3 transition-all"
+                                    className="w-full rounded-md border-white/30 bg-black text-white focus:ring-2 focus:ring-white focus:border-white px-4 py-3 transition-all"
                                     disabled={loading}
                                 />
                             </div>
 
                             {/* Session Selector */}
                             <div className="space-y-2">
-                                <Label className="text-sm font-medium text-gray-300 flex items-center">
-                                    <Clock className="h-4 w-4 mr-2 text-purple-400" />
+                                <Label className="text-sm font-medium text-white flex items-center">
+                                    <Clock className="h-4 w-4 mr-2 text-white" />
                                     Session
                                 </Label>
                                 <Select
@@ -133,25 +129,25 @@ export default function Home() {
                                     onValueChange={(value) => setSession(value)}
                                     disabled={loading}
                                 >
-                                    <SelectTrigger className="w-full rounded-lg border-gray-700 bg-gray-900 text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 px-4 py-3 transition-all">
+                                    <SelectTrigger className="w-full rounded-md border-white/30 bg-black text-white focus:ring-2 focus:ring-white focus:border-white px-4 py-3 transition-all">
                                         <SelectValue placeholder="Select a session" />
                                     </SelectTrigger>
-                                    <SelectContent className="bg-gray-900 border-gray-800 text-white">
+                                    <SelectContent className="bg-black border-white/30 text-white">
                                         <SelectItem
                                             value="AM Break"
-                                            className="focus:bg-gray-800"
+                                            className="focus:bg-white/10"
                                         >
                                             AM Break
                                         </SelectItem>
                                         <SelectItem
                                             value="Lunch Break"
-                                            className="focus:bg-gray-800"
+                                            className="focus:bg-white/10"
                                         >
                                             Lunch Break
                                         </SelectItem>
                                         <SelectItem
                                             value="PM Break"
-                                            className="focus:bg-gray-800"
+                                            className="focus:bg-white/10"
                                         >
                                             PM Break
                                         </SelectItem>
@@ -163,7 +159,7 @@ export default function Home() {
                             <Button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg py-3 font-semibold hover:from-purple-700 hover:to-blue-700 transition-all duration-300 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="w-full bg-white text-black rounded-md py-3 font-semibold hover:bg-gray-200 border border-white transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                                 size="lg"
                             >
                                 {loading ? (

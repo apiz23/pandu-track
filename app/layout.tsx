@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
-import Header from "@/components/header";
+import { AnimatedGridPattern } from "@/components/magicui/animated-grid-pattern";
 
 const poppins = Poppins({
     subsets: ["latin"],
@@ -23,8 +23,8 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en">
-            <body className={`${poppins.className} bg-gray-50 text-gray-900`}>
-                <Header />
+            <body className={`${poppins.className}`}>
+                <AnimatedGridPattern />
                 {children}
                 <Toaster richColors position="top-center" />
             </body>
