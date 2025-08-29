@@ -3,6 +3,8 @@ import { Poppins } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { AnimatedGridPattern } from "@/components/magicui/animated-grid-pattern";
+import { ThemeProvider } from "@/components/theme-provider";
+import Navbar from "@/components/navbar";
 
 const poppins = Poppins({
     subsets: ["latin"],
@@ -22,10 +24,20 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="en">
-            <body className={`${poppins.className}`}>
-                <AnimatedGridPattern />
-                {children}
+        <html lang="en" suppressHydrationWarning>
+            <body className={`${poppins.className} h-screen overflow-hidden`}>
+                <ThemeProvider
+                    attribute="class"
+                    defaultTheme="system"
+                    enableSystem
+                    disableTransitionOnChange
+                >
+                    <AnimatedGridPattern />
+                    <Navbar />
+                    <main className="h-full w-full flex flex-col">
+                        {children}
+                    </main>
+                </ThemeProvider>
                 <Toaster richColors position="top-center" />
             </body>
         </html>

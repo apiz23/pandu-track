@@ -76,20 +76,20 @@ export default function Home() {
     return (
         <>
             <main className="min-h-screen flex items-center justify-center px-4 py-8 relative overflow-hidden">
-                <Card className="w-full max-w-md shadow-2xl rounded-lg overflow-hidden border border-white/20 bg-neutral-800 relative z-10">
-                    <div className="absolute inset-0 border border-white/10 rounded-lg pointer-events-none"></div>
+                <Card className="w-full max-w-xl shadow-2xl rounded-lg overflow-hidden border border-gray-300 dark:border-gray-700 bg-white dark:bg-neutral-800 relative z-10 p-6 transition-colors">
+                    <div className="absolute inset-0 border border-gray-200 dark:border-white/10 rounded-lg pointer-events-none"></div>
 
                     <CardHeader className="pb-4 pt-8">
                         <div className="flex justify-center mb-4">
-                            <div className="p-3 rounded-lg border border-white/30 bg-black">
-                                <Calendar className="h-8 w-8 text-white" />
+                            <div className="p-3 rounded-lg border border-gray-300 dark:border-white/30 bg-gray-100 dark:bg-black transition-colors">
+                                <Calendar className="h-8 w-8 text-gray-700 dark:text-white" />
                             </div>
                         </div>
-                        <CardTitle className="text-2xl font-bold text-center text-white">
+                        <CardTitle className="text-2xl font-bold text-center text-gray-900 dark:text-white transition-colors">
                             Program Anjakan Minda Keusahawanan Graduan {"("}
                             PANDU{")"}
                         </CardTitle>
-                        <CardDescription className="text-center text-gray-400 mt-2">
+                        <CardDescription className="text-center text-gray-600 dark:text-gray-400 mt-2 transition-colors">
                             Enter your details to check in for the event
                         </CardDescription>
                     </CardHeader>
@@ -100,9 +100,9 @@ export default function Home() {
                             <div className="space-y-2">
                                 <Label
                                     htmlFor="matric"
-                                    className="text-sm font-medium text-white flex items-center"
+                                    className="text-sm font-medium text-gray-900 dark:text-white flex items-center transition-colors"
                                 >
-                                    <User className="h-4 w-4 mr-2 text-white" />
+                                    <User className="h-4 w-4 mr-2 text-gray-700 dark:text-white transition-colors" />
                                     Matric Number
                                 </Label>
                                 <Input
@@ -113,15 +113,15 @@ export default function Home() {
                                         setMatric(e.target.value.toUpperCase())
                                     }
                                     placeholder="e.g., A12345"
-                                    className="w-full rounded-md border-white/30 bg-black text-white focus:ring-2 focus:ring-white focus:border-white px-4 py-3 transition-all"
+                                    className="w-full rounded-md border-gray-300 dark:border-white/30 bg-white dark:bg-black text-gray-900 dark:text-white focus:ring-2 focus:ring-black/50 dark:focus:ring-white/50 focus:border-black dark:focus:border-white px-4 py-3 transition-all"
                                     disabled={loading}
                                 />
                             </div>
 
                             {/* Session Selector */}
                             <div className="space-y-2">
-                                <Label className="text-sm font-medium text-white flex items-center">
-                                    <Clock className="h-4 w-4 mr-2 text-white" />
+                                <Label className="text-sm font-medium text-gray-900 dark:text-white flex items-center transition-colors">
+                                    <Clock className="h-4 w-4 mr-2 text-gray-700 dark:text-white transition-colors" />
                                     Session
                                 </Label>
                                 <Select
@@ -129,25 +129,25 @@ export default function Home() {
                                     onValueChange={(value) => setSession(value)}
                                     disabled={loading}
                                 >
-                                    <SelectTrigger className="w-full rounded-md border-white/30 bg-black text-white focus:ring-2 focus:ring-white focus:border-white px-4 py-3 transition-all">
+                                    <SelectTrigger className="w-full rounded-md border-gray-300 dark:border-white/30 bg-white dark:bg-black text-gray-900 dark:text-white focus:ring-2 focus:ring-black/50 dark:focus:ring-white/50 focus:border-black dark:focus:border-white px-4 py-3 transition-all">
                                         <SelectValue placeholder="Select a session" />
                                     </SelectTrigger>
-                                    <SelectContent className="bg-black border-white/30 text-white">
+                                    <SelectContent className="bg-white dark:bg-black border-gray-300 dark:border-white/30 text-gray-900 dark:text-white">
                                         <SelectItem
                                             value="AM Break"
-                                            className="focus:bg-white/10"
+                                            className="focus:bg-gray-100 dark:focus:bg-white/10"
                                         >
                                             AM Break
                                         </SelectItem>
                                         <SelectItem
                                             value="Lunch Break"
-                                            className="focus:bg-white/10"
+                                            className="focus:bg-gray-100 dark:focus:bg-white/10"
                                         >
                                             Lunch Break
                                         </SelectItem>
                                         <SelectItem
                                             value="PM Break"
-                                            className="focus:bg-white/10"
+                                            className="focus:bg-gray-100 dark:focus:bg-white/10"
                                         >
                                             PM Break
                                         </SelectItem>
@@ -159,7 +159,7 @@ export default function Home() {
                             <Button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full bg-white text-black rounded-md py-3 font-semibold hover:bg-gray-200 border border-white transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="w-full bg-black dark:bg-white text-white dark:text-black rounded-md py-3 font-semibold hover:bg-gray-800 dark:hover:bg-gray-200 border border-black dark:border-white transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                                 size="lg"
                             >
                                 {loading ? (
@@ -173,7 +173,7 @@ export default function Home() {
                             </Button>
                         </form>
 
-                        <p className="text-xs text-center text-gray-500 mt-6">
+                        <p className="text-xs text-center text-gray-500 dark:text-gray-400 mt-6 transition-colors">
                             Your attendance will be recorded instantly upon
                             submission
                         </p>
