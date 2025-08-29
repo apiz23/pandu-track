@@ -25,18 +25,25 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en" suppressHydrationWarning>
-            <body className={`${poppins.className} h-screen overflow-hidden`}>
+            <body
+                className={`${poppins.className} relative h-screen overflow-hidden`}
+            >
                 <ThemeProvider
                     attribute="class"
                     defaultTheme="system"
                     enableSystem
                     disableTransitionOnChange
                 >
-                    <AnimatedGridPattern />
-                    <Navbar />
-                    <main className="h-full w-full flex flex-col">
-                        {children}
-                    </main>
+                    {/* Background grid */}
+                    <AnimatedGridPattern className="absolute inset-0 h-screen w-full -z-10" />
+
+                    {/* Foreground content */}
+                    <div className="relative z-10 flex flex-col h-full">
+                        <Navbar />
+                        <main className="flex-1 flex items-center justify-center">
+                            {children}
+                        </main>
+                    </div>
                 </ThemeProvider>
                 <Toaster richColors position="top-center" />
             </body>
