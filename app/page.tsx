@@ -1,103 +1,189 @@
-import Image from "next/image";
+"use client";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useState } from "react";
+import { toast } from "sonner";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card";
+import { Loader2, Calendar, User, Clock } from "lucide-react";
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    const [matric, setMatric] = useState("");
+    const [session, setSession] = useState("AM Break");
+    const [loading, setLoading] = useState(false);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!matric.trim()) {
+            toast.error("Please enter your matric number");
+            return;
+        }
+
+        setLoading(true);
+
+        const submitPromise = fetch("/api/attendance/append", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ matric, session }),
+        }).then(async (res) => {
+            const data = await res.json();
+
+            if (!res.ok) {
+                if (
+                    res.status === 403 &&
+                    data.error === "Matric not registered"
+                ) {
+                    throw new Error(
+                        "Your matric number is not registered for this event"
+                    );
+                } else {
+                    throw new Error(
+                        data.error || "Failed to record attendance"
+                    );
+                }
+            }
+
+            setMatric("");
+            return { matric };
+        });
+
+        toast.promise(submitPromise, {
+            loading: "Recording attendance...",
+            success: (data) => `Attendance for ${data.matric} recorded ✅`,
+            error: (err: unknown) => {
+                if (err instanceof Error) return err.message;
+                return "Error recording attendance ❌";
+            },
+        });
+
+        submitPromise.finally(() => setLoading(false));
+    };
+
+    return (
+        <>
+            <main className="min-h-screen flex items-center justify-center px-4 py-8 bg-gray-900 relative overflow-hidden">
+                <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-900 rounded-full filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+                <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-blue-900 rounded-full filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
+                <div className="absolute bottom-1/4 left-1/3 w-96 h-96 bg-indigo-900 rounded-full filter blur-3xl opacity-20 animate-blob"></div>
+
+                <Card className="w-full max-w-md shadow-2xl rounded-xl overflow-hidden border border-gray-800 backdrop-blur-md bg-gray-800/80 relative z-10">
+                    <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-purple-600 to-blue-600"></div>
+
+                    <CardHeader className="pb-4 pt-8">
+                        <div className="flex justify-center mb-4">
+                            <div className="bg-gradient-to-br from-purple-600 to-blue-600 p-4 rounded-2xl shadow-lg">
+                                <Calendar className="h-8 w-8 text-white" />
+                            </div>
+                        </div>
+                        <CardTitle className="text-2xl font-bold text-center text-white">
+                            Program Anjakan Minda Keusahawanan Graduan {"("}
+                            PANDU{")"}
+                        </CardTitle>
+                        <CardDescription className="text-center text-gray-400 mt-2">
+                            Enter your details to check in for the event
+                        </CardDescription>
+                    </CardHeader>
+
+                    <CardContent className="pt-2 pb-6">
+                        <form onSubmit={handleSubmit} className="space-y-5">
+                            {/* Matric Input */}
+                            <div className="space-y-2">
+                                <Label
+                                    htmlFor="matric"
+                                    className="text-sm font-medium text-gray-300 flex items-center"
+                                >
+                                    <User className="h-4 w-4 mr-2 text-purple-400" />
+                                    Matric Number
+                                </Label>
+                                <Input
+                                    id="matric"
+                                    type="text"
+                                    value={matric}
+                                    onChange={(e) =>
+                                        setMatric(e.target.value.toUpperCase())
+                                    }
+                                    placeholder="e.g., A12345"
+                                    className="w-full rounded-lg border-gray-700 bg-gray-900 text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 px-4 py-3 transition-all"
+                                    disabled={loading}
+                                />
+                            </div>
+
+                            {/* Session Selector */}
+                            <div className="space-y-2">
+                                <Label className="text-sm font-medium text-gray-300 flex items-center">
+                                    <Clock className="h-4 w-4 mr-2 text-purple-400" />
+                                    Session
+                                </Label>
+                                <Select
+                                    value={session}
+                                    onValueChange={(value) => setSession(value)}
+                                    disabled={loading}
+                                >
+                                    <SelectTrigger className="w-full rounded-lg border-gray-700 bg-gray-900 text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 px-4 py-3 transition-all">
+                                        <SelectValue placeholder="Select a session" />
+                                    </SelectTrigger>
+                                    <SelectContent className="bg-gray-900 border-gray-800 text-white">
+                                        <SelectItem
+                                            value="AM Break"
+                                            className="focus:bg-gray-800"
+                                        >
+                                            AM Break
+                                        </SelectItem>
+                                        <SelectItem
+                                            value="Lunch Break"
+                                            className="focus:bg-gray-800"
+                                        >
+                                            Lunch Break
+                                        </SelectItem>
+                                        <SelectItem
+                                            value="PM Break"
+                                            className="focus:bg-gray-800"
+                                        >
+                                            PM Break
+                                        </SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            {/* Submit Button */}
+                            <Button
+                                type="submit"
+                                disabled={loading}
+                                className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg py-3 font-semibold hover:from-purple-700 hover:to-blue-700 transition-all duration-300 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                                size="lg"
+                            >
+                                {loading ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        Processing...
+                                    </>
+                                ) : (
+                                    "Submit Attendance"
+                                )}
+                            </Button>
+                        </form>
+
+                        <p className="text-xs text-center text-gray-500 mt-6">
+                            Your attendance will be recorded instantly upon
+                            submission
+                        </p>
+                    </CardContent>
+                </Card>
+            </main>
+        </>
+    );
 }
