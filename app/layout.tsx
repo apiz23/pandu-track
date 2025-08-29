@@ -13,7 +13,7 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-    title: "Attendance Tracker",
+    title: "PANDU Tracker",
     description:
         "Simple attendance monitoring system for PANDU Program participants. Enter matric number to check-in after each break.",
 };
