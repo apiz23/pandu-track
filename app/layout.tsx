@@ -35,7 +35,7 @@ export default function RootLayout({
                     disableTransitionOnChange
                 >
                     {/* Background grid */}
-                    <AnimatedGridPattern className="absolute inset-0 h-screen w-full -z-10" />
+                    <AnimatedGridPattern className="absolute inset-0 w-full -z-10" />
 
                     {/* Foreground content */}
                     <div className="relative z-10 flex flex-col h-full">
@@ -45,7 +45,7 @@ export default function RootLayout({
                         </main>
                     </div>
                 </ThemeProvider>
-                <Toaster richColors position="top-center" />
+                <Toaster richColors expand={true} />
             </body>
         </html>
     );

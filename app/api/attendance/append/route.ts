@@ -1,5 +1,7 @@
+// app/api/attendance/append/route.ts
 import { NextResponse } from "next/server";
 import { google } from "googleapis";
+import { getActiveSession } from "@/lib/getActiveSession";
 
 function formatTimestamp(date: Date): string {
     const pad = (n: number) => n.toString().padStart(2, "0");
@@ -12,12 +14,32 @@ function formatTimestamp(date: Date): string {
 
 export async function POST(req: Request) {
     try {
-        const { matric, session } = await req.json();
+        const { matric, session: submittedSession } = await req.json();
 
-        if (!matric || !session) {
+        if (!matric) {
             return NextResponse.json(
-                { success: false, error: "Missing matric or session" },
+                { success: false, error: "Missing matric" },
                 { status: 400 }
+            );
+        }
+
+        // 1️⃣ Detect the active session based on current time
+        const activeSession = getActiveSession();
+        if (!activeSession) {
+            return NextResponse.json(
+                { success: false, error: "No active session at this time" },
+                { status: 403 }
+            );
+        }
+
+        // 2️⃣ Validate that submitted session matches the active one
+        if (submittedSession !== activeSession) {
+            return NextResponse.json(
+                {
+                    success: false,
+                    error: `You can only check in during the active session: ${activeSession}`,
+                },
+                { status: 403 }
             );
         }
 
@@ -29,10 +51,10 @@ export async function POST(req: Request) {
 
         const sheets = google.sheets({ version: "v4", auth });
 
-        // 1️⃣ Fetch all matric numbers from "Form_responses!D:D"
+        // 3️⃣ Fetch registered matric numbers
         const registeredRes = await sheets.spreadsheets.values.get({
             spreadsheetId: process.env.GOOGLE_SHEET_ID,
-            range: "Form_responses!D:D", // Column D (matric numbers)
+            range: "Form_responses!D:D", // Column D
         });
 
         const registeredMatric =
@@ -40,7 +62,6 @@ export async function POST(req: Request) {
                 ?.flat()
                 .map((m) => m.toString().toUpperCase()) || [];
 
-        // 2️⃣ Check if submitted matric exists
         if (!registeredMatric.includes(matric.toUpperCase())) {
             return NextResponse.json(
                 { success: false, error: "Matric not registered" },
@@ -48,7 +69,7 @@ export async function POST(req: Request) {
             );
         }
 
-        // 3️⃣ If exists, record attendance
+        // 4️⃣ Append attendance with active session
         const timestamp = formatTimestamp(new Date());
 
         await sheets.spreadsheets.values.append({
@@ -56,13 +77,13 @@ export async function POST(req: Request) {
             range: "pandu_tracking!A:C",
             valueInputOption: "RAW",
             requestBody: {
-                values: [[matric.toUpperCase(), session, timestamp]],
+                values: [[matric.toUpperCase(), activeSession, timestamp]],
             },
         });
 
         return NextResponse.json({
             success: true,
-            message: "Attendance recorded",
+            message: `Attendance recorded for ${activeSession}`,
             timestamp,
         });
     } catch (error) {

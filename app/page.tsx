@@ -20,6 +20,7 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { Loader2, Calendar, User, Clock } from "lucide-react";
+import { sessions } from "@/config/session";
 
 export default function Home() {
     const [matric, setMatric] = useState("");
@@ -74,9 +75,9 @@ export default function Home() {
     };
 
     return (
-        <main className="h-screen flex md:items-center justify-center px-3 sm:px-4 py-20 sm:py-4 relative overflow-hidden">
+        <main className="h-screen flex justify-center px-3 sm:px-4 py-28 relative overflow-hidden">
             <Card className="w-full h-fit max-w-sm sm:max-w-md md:max-w-lg shadow-2xl rounded-lg overflow-hidden border border-gray-300 dark:border-gray-700 bg-white dark:bg-neutral-800 relative z-10 p-4 sm:p-6 transition-colors text-[13px] sm:text-[15px]">
-                <CardHeader className="pb-4 pt-6">
+                <CardHeader className="pb-4">
                     <div className="flex justify-center mb-3">
                         <div className="p-2 rounded-lg border border-gray-300 dark:border-white/30 bg-gray-100 dark:bg-black transition-colors">
                             <Calendar className="h-7 w-7 text-gray-700 dark:text-white" />
@@ -129,15 +130,14 @@ export default function Home() {
                                     <SelectValue placeholder="Select a session" />
                                 </SelectTrigger>
                                 <SelectContent className="bg-white dark:bg-black border-gray-300 dark:border-white/30 text-gray-900 dark:text-white">
-                                    <SelectItem value="AM Break">
-                                        AM Break
-                                    </SelectItem>
-                                    <SelectItem value="Lunch Break">
-                                        Lunch Break
-                                    </SelectItem>
-                                    <SelectItem value="PM Break">
-                                        PM Break
-                                    </SelectItem>
+                                    {sessions.map((s: any) => (
+                                        <SelectItem
+                                            key={s.value}
+                                            value={s.value}
+                                        >
+                                            {s.label} ({s.start} - {s.end})
+                                        </SelectItem>
+                                    ))}
                                 </SelectContent>
                             </Select>
                         </div>
