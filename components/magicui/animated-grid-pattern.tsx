@@ -69,6 +69,7 @@ export function AnimatedGridPattern({
     };
 
     // Update squares to animate in
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
         if (dimensions.width && dimensions.height) {
             setSquares(generateSquares(numSquares));

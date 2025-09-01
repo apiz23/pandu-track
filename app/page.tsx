@@ -20,12 +20,44 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { Loader2, Calendar, User, Clock } from "lucide-react";
-import { sessions } from "@/config/session";
+import { Typeession, sessions } from "@/config/session";
+import confetti from "canvas-confetti";
 
 export default function Home() {
     const [matric, setMatric] = useState("");
     const [session, setSession] = useState("AM Break");
     const [loading, setLoading] = useState(false);
+
+    const triggerConfetti = () => {
+        const end = Date.now() + 3 * 1000;
+
+        const colors = ["#FFD700", "#C0C0C0", "#FFFFFF", "#D3D3D3"];
+
+        const frame = () => {
+            if (Date.now() > end) return;
+
+            confetti({
+                particleCount: 2,
+                angle: 60,
+                spread: 55,
+                startVelocity: 60,
+                origin: { x: 0, y: 0.5 },
+                colors: colors,
+            });
+            confetti({
+                particleCount: 2,
+                angle: 120,
+                spread: 55,
+                startVelocity: 60,
+                origin: { x: 1, y: 0.5 },
+                colors: colors,
+            });
+
+            requestAnimationFrame(frame);
+        };
+
+        frame();
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -58,7 +90,10 @@ export default function Home() {
                 }
             }
 
+            // ✅ Reset input and trigger confetti
             setMatric("");
+            triggerConfetti();
+
             return { matric };
         });
 
@@ -130,7 +165,7 @@ export default function Home() {
                                     <SelectValue placeholder="Select a session" />
                                 </SelectTrigger>
                                 <SelectContent className="bg-white dark:bg-black border-gray-300 dark:border-white/30 text-gray-900 dark:text-white">
-                                    {sessions.map((s: any) => (
+                                    {sessions.map((s: Typeession) => (
                                         <SelectItem
                                             key={s.value}
                                             value={s.value}

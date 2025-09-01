@@ -1,5 +1,11 @@
-// config/session.ts
-export const sessions = [
+export type Typeession = {
+    value: string;
+    label: string;
+    start: string;
+    end: string;
+};
+
+export const sessions: Typeession[] = [
     {
         value: "AM Break",
         label: "AM Break",
@@ -16,6 +22,6 @@ export const sessions = [
         value: "PM Break",
         label: "PM Break",
         start: "23:00",
-        end: "00:00",
+        end: "00:30",
     },
 ];
