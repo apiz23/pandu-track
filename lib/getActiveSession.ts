@@ -12,8 +12,15 @@ function isWithinTimeRange(current: string, start: string, end: string) {
 }
 
 export function getActiveSession(): string | null {
-    const now = new Date();
-    const current = now.toTimeString().slice(0, 5); // HH:MM
+    // Force time to Malaysia (Asia/Kuala_Lumpur)
+    const formatter = new Intl.DateTimeFormat("en-GB", {
+        timeZone: "Asia/Kuala_Lumpur",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+    });
+
+    const current = formatter.format(new Date()); // "HH:MM"
 
     for (const session of sessions) {
         if (isWithinTimeRange(current, session.start, session.end)) {
