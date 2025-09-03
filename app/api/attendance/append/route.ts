@@ -99,15 +99,18 @@ export async function POST(req: Request) {
             matric: matric.toUpperCase().trim(),
             timestamp,
         });
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("Google Sheets append error:", error);
-
+    
+        let message = "Failed to record attendance";
+        if (error instanceof Error) {
+            message = error.message;
+        }
+    
         return NextResponse.json(
-            {
-                success: false,
-                error: error?.message || "Failed to record attendance",
-            },
+            { success: false, error: message },
             { status: 500 }
         );
     }
+    
 }
