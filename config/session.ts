@@ -9,19 +9,19 @@ export const sessions: Typeession[] = [
     {
         value: "AM Break",
         label: "AM Break",
-        start: "10:00",
-        end: "10:30",
+        start: "10:45",
+        end: "11:45",
     },
     {
         value: "Lunch Break",
         label: "Lunch Break",
-        start: "12:30",
-        end: "14:00",
+        start: "14:00",
+        end: "15:00",
     },
     {
         value: "PM Break",
         label: "PM Break",
-        start: "23:00",
-        end: "00:30",
+        start: "16:00",
+        end: "17:00",
     },
 ];

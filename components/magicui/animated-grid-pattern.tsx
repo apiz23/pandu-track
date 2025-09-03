@@ -7,6 +7,7 @@ import {
     useId,
     useRef,
     useState,
+    useCallback,
 } from "react";
 
 import { cn } from "@/lib/utils";
@@ -36,45 +37,41 @@ export function AnimatedGridPattern({
     ...props
 }: AnimatedGridPatternProps) {
     const id = useId();
-    const containerRef = useRef(null);
+    const containerRef = useRef<SVGSVGElement | null>(null);
     const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
-    const [squares, setSquares] = useState(() => generateSquares(numSquares));
+    const [squares, setSquares] = useState<
+        { id: number; pos: [number, number] }[]
+    >([]);
 
-    function getPos() {
+    const getPos = useCallback((): [number, number] => {
         return [
             Math.floor((Math.random() * dimensions.width) / width),
             Math.floor((Math.random() * dimensions.height) / height),
         ];
-    }
+    }, [dimensions.width, dimensions.height, width, height]);
 
-    function generateSquares(count: number) {
-        return Array.from({ length: count }, (_, i) => ({
-            id: i,
-            pos: getPos(),
-        }));
-    }
+    const generateSquares = useCallback(
+        (count: number) =>
+            Array.from({ length: count }, (_, i) => ({
+                id: i,
+                pos: getPos(),
+            })),
+        [getPos]
+    );
 
-    // Function to update a single square's position
     const updateSquarePosition = (id: number) => {
         setSquares((currentSquares) =>
             currentSquares.map((sq) =>
-                sq.id === id
-                    ? {
-                          ...sq,
-                          pos: getPos(),
-                      }
-                    : sq
+                sq.id === id ? { ...sq, pos: getPos() } : sq
             )
         );
     };
 
-    // Update squares to animate in
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
         if (dimensions.width && dimensions.height) {
             setSquares(generateSquares(numSquares));
         }
-    }, [dimensions, numSquares]);
+    }, [dimensions, numSquares, generateSquares]);
 
     useEffect(() => {
         const resizeObserver = new ResizeObserver((entries) => {
@@ -86,20 +83,24 @@ export function AnimatedGridPattern({
             }
         });
 
-        const container = containerRef.current;
-        if (container) resizeObserver.observe(container);
+        const el = containerRef.current;
+        if (el) {
+            resizeObserver.observe(el);
+        }
 
         return () => {
-            if (container) resizeObserver.unobserve(container);
+            if (el) {
+                resizeObserver.unobserve(el);
+            }
         };
-    }, []); // remove containerRef from deps
+    }, []);
 
     return (
         <svg
             ref={containerRef}
             aria-hidden="true"
             className={cn(
-                "pointer-events-none absolute inset-0 h-screen w-full fill-gray-400/30 stroke-gray-400/30 -z-10",
+                "pointer-events-none absolute inset-0 h-full w-full fill-gray-400/30 stroke-gray-400/30",
                 className
             )}
             {...props}
@@ -133,7 +134,7 @@ export function AnimatedGridPattern({
                             repeatType: "reverse",
                         }}
                         onAnimationComplete={() => updateSquarePosition(id)}
-                        key={`${x}-${y}-${index}`}
+                        key={`${x}-${y}-${id}`}
                         width={width - 1}
                         height={height - 1}
                         x={x * width + 1}

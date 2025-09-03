@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { AnimatedGridPattern } from "@/components/magicui/animated-grid-pattern";
 import { ThemeProvider } from "@/components/theme-provider";
 import Navbar from "@/components/navbar";
+import { cn } from "@/lib/utils";
 
 const poppins = Poppins({
     subsets: ["latin"],
@@ -35,7 +36,18 @@ export default function RootLayout({
                     disableTransitionOnChange
                 >
                     {/* Background grid */}
-                    <AnimatedGridPattern className="absolute inset-0 w-full -z-10" />
+                    <AnimatedGridPattern
+                        numSquares={30}
+                        maxOpacity={0.1}
+                        duration={3}
+                        className={cn(
+                            "[mask-image:radial-gradient(600px_circle_at_center,white,transparent)]",
+                            "sm:[mask-image:radial-gradient(600px_circle_at_center,white,transparent)]",
+                            "md:[mask-image:radial-gradient(800px_circle_at_center,white,transparent)]",
+                            "lg:[mask-image:radial-gradient(1000px_circle_at_center,white,transparent)]",
+                            "inset-x-0 inset-y-[-30%] h-[100%] skew-y-12 absolute inset-0 w-full -z-10"
+                        )}
+                    />
 
                     {/* Foreground content */}
                     <div className="relative z-10 flex flex-col h-full">

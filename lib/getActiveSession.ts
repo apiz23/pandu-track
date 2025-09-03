@@ -1,4 +1,3 @@
-// lib/getActiveSession.ts
 import { sessions } from "@/config/session";
 
 function isWithinTimeRange(current: string, start: string, end: string) {
