@@ -12,18 +12,24 @@ function formatTimestamp(date: Date): string {
     )}:${pad(date.getSeconds())}`;
 }
 
+type AttendanceRequest = {
+    matric: string;
+    session: string;
+};
+
 export async function POST(req: Request) {
     try {
-        const { matric, session: submittedSession } = await req.json();
+        const body = (await req.json()) as AttendanceRequest;
+        const { matric, session: submittedSession } = body;
 
         if (!matric) {
             return NextResponse.json(
-                { success: false, error: "Missing matric" },
+                { success: false, error: "Missing matric number" },
                 { status: 400 }
             );
         }
 
-        // 1️⃣ Detect the active session based on current time
+        // 1️⃣ Detect active session
         const activeSession = getActiveSession();
         if (!activeSession) {
             return NextResponse.json(
@@ -32,8 +38,11 @@ export async function POST(req: Request) {
             );
         }
 
-        // 2️⃣ Validate that submitted session matches the active one
-        if (submittedSession !== activeSession) {
+        // 2️⃣ Validate submitted session
+        if (
+            submittedSession.trim().toLowerCase() !==
+            activeSession.trim().toLowerCase()
+        ) {
             return NextResponse.json(
                 {
                     success: false,
@@ -43,6 +52,7 @@ export async function POST(req: Request) {
             );
         }
 
+        // 3️⃣ Google Sheets Auth
         const auth = new google.auth.JWT({
             email: process.env.GOOGLE_CLIENT_EMAIL,
             key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
@@ -51,25 +61,25 @@ export async function POST(req: Request) {
 
         const sheets = google.sheets({ version: "v4", auth });
 
-        // 3️⃣ Fetch registered matric numbers
+        // 4️⃣ Get registered matric numbers
         const registeredRes = await sheets.spreadsheets.values.get({
             spreadsheetId: process.env.GOOGLE_SHEET_ID,
-            range: "Form_responses!D:D", // Column D
+            range: "Form_responses!D:D", // Column D = matric
         });
 
         const registeredMatric =
             registeredRes.data.values
                 ?.flat()
-                .map((m) => m.toString().toUpperCase()) || [];
+                .map((m) => m.toString().toUpperCase().trim()) || [];
 
-        if (!registeredMatric.includes(matric.toUpperCase())) {
+        if (!registeredMatric.includes(matric.toUpperCase().trim())) {
             return NextResponse.json(
                 { success: false, error: "Matric not registered" },
                 { status: 403 }
             );
         }
 
-        // 4️⃣ Append attendance with active session
+        // 5️⃣ Append attendance record
         const timestamp = formatTimestamp(new Date());
 
         await sheets.spreadsheets.values.append({
@@ -77,19 +87,26 @@ export async function POST(req: Request) {
             range: "pandu_tracking!A:C",
             valueInputOption: "RAW",
             requestBody: {
-                values: [[matric.toUpperCase(), activeSession, timestamp]],
+                values: [
+                    [matric.toUpperCase().trim(), activeSession, timestamp],
+                ],
             },
         });
 
         return NextResponse.json({
             success: true,
             message: `Attendance recorded for ${activeSession}`,
+            matric: matric.toUpperCase().trim(),
             timestamp,
         });
-    } catch (error) {
+    } catch (error: any) {
         console.error("Google Sheets append error:", error);
+
         return NextResponse.json(
-            { success: false, error: "Failed to record attendance" },
+            {
+                success: false,
+                error: error?.message || "Failed to record attendance",
+            },
             { status: 500 }
         );
     }
