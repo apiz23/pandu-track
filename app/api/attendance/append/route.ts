@@ -1,6 +1,6 @@
 // app/api/attendance/append/route.ts
 import { NextResponse } from "next/server";
-import { google } from "googleapis";
+// import { google } from "googleapis"; // ❌ Commented: Google Sheets not used
 import { getActiveSession } from "@/lib/getActiveSession";
 import supabase from "@/lib/supabase";
 
@@ -53,7 +53,8 @@ export async function POST(req: Request) {
             );
         }
 
-        // 3️⃣ Google Sheets Auth
+        // 3️⃣ Google Sheets Auth (❌ Commented out)
+        /*
         const auth = new google.auth.JWT({
             email: process.env.GOOGLE_CLIENT_EMAIL,
             key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
@@ -93,8 +94,10 @@ export async function POST(req: Request) {
                 ],
             },
         });
+        */
 
-        // 6️⃣ Insert attendance record (Supabase)
+        // 6️⃣ Insert attendance record (Supabase ✅)
+        const timestamp = formatTimestamp(new Date());
         const { error: insertErr } = await supabase.from("pandu_track").insert({
             matric_no: matric.toUpperCase().trim(),
             session: activeSession,
@@ -106,7 +109,7 @@ export async function POST(req: Request) {
             return NextResponse.json(
                 {
                     success: false,
-                    error: "Recorded in Google Sheet but failed in Supabase",
+                    error: "Failed to record attendance in Supabase",
                 },
                 { status: 500 }
             );
