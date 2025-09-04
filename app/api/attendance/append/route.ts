@@ -2,6 +2,8 @@
 import { NextResponse } from "next/server";
 import { google } from "googleapis";
 import { getActiveSession } from "@/lib/getActiveSession";
+import { createClient } from "@supabase/supabase-js";
+import supabase from "@/lib/supabase";
 
 function formatTimestamp(date: Date): string {
     const pad = (n: number) => n.toString().padStart(2, "0");
@@ -61,7 +63,7 @@ export async function POST(req: Request) {
 
         const sheets = google.sheets({ version: "v4", auth });
 
-        // 4️⃣ Get registered matric numbers
+        // 4️⃣ Get registered matric numbers from Google Sheet
         const registeredRes = await sheets.spreadsheets.values.get({
             spreadsheetId: process.env.GOOGLE_SHEET_ID,
             range: "Form_responses!D:D", // Column D = matric
@@ -79,7 +81,7 @@ export async function POST(req: Request) {
             );
         }
 
-        // 5️⃣ Append attendance record
+        // 5️⃣ Append attendance record (Google Sheets)
         const timestamp = formatTimestamp(new Date());
 
         await sheets.spreadsheets.values.append({
@@ -93,6 +95,24 @@ export async function POST(req: Request) {
             },
         });
 
+        // 6️⃣ Insert attendance record (Supabase)
+        const { error: insertErr } = await supabase.from("pandu_track").insert({
+            matric_no: matric.toUpperCase().trim(),
+            session: activeSession,
+            timestamp: new Date(),
+        });
+
+        if (insertErr) {
+            console.error("Supabase insert error:", insertErr);
+            return NextResponse.json(
+                {
+                    success: false,
+                    error: "Recorded in Google Sheet but failed in Supabase",
+                },
+                { status: 500 }
+            );
+        }
+
         return NextResponse.json({
             success: true,
             message: `Attendance recorded for ${activeSession}`,
@@ -100,17 +120,16 @@ export async function POST(req: Request) {
             timestamp,
         });
     } catch (error: unknown) {
-        console.error("Google Sheets append error:", error);
-    
+        console.error("Error:", error);
+
         let message = "Failed to record attendance";
         if (error instanceof Error) {
             message = error.message;
         }
-    
+
         return NextResponse.json(
             { success: false, error: message },
             { status: 500 }
         );
     }
-    
 }
