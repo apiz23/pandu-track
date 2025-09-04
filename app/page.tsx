@@ -116,9 +116,9 @@ export default function Home() {
     };
 
     return (
-        <main className="min-h-screen flex justify-center px-3 sm:px-4 py-20 relative overflow-hidden">
-            <Card className="w-full h-fit max-w-sm sm:max-w-md md:max-w-lg shadow-2xl rounded-xl overflow-hidden border-0 outline-2 bg-white/80 dark:bg-neutral-900/90 backdrop-blur-sm relative z-10 p-3 sm:p-6 transition-all">
-                <CardHeader className="pb-4 text-center">
+        <>
+            <Card className="w-full h-fit max-w-sm sm:max-w-md md:max-w-lg shadow-2xl rounded-xl overflow-hidden border-0 outline-2 bg-neutral-300/90 dark:bg-neutral-900/90 backdrop-blur-sm relative z-10 p-2 sm:p-6 transition-all">
+                <CardHeader className="text-center">
                     <div className="flex justify-center my-5">
                         <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 dark:bg-black/20 backdrop-blur-md shadow-lg dark:shadow-purple-500/5 transition-all duration-300 min-w-[90%] min-h-40 outline-2 outline-yellow-400">
                             <Image
@@ -140,12 +140,8 @@ export default function Home() {
                     >
                         Program Anjakan Minda Keusahawanan Graduan
                     </CardTitle>
-
-                    <div className="mt-2 text-sm text-indigo-400 dark:text-indigo-300 font-medium">
+                    <CardDescription className="text-center text-gray-600 dark:text-gray-300 mt-3 transition-colors font-medium">
                         (PANDU)
-                    </div>
-                    <CardDescription className="text-center text-gray-600 dark:text-gray-300 mt-3 transition-colors">
-                        Enter your matric number to check in for the event
                     </CardDescription>
                 </CardHeader>
 
@@ -169,7 +165,7 @@ export default function Home() {
                                 }
                                 placeholder="e.g., DI230066"
                                 disabled={loading}
-                                className="py-5 px-4 rounded-xl border-gray-300 dark:border-gray-600 focus-visible:ring-blue-500 focus-visible:ring-2 transition-all"
+                                className="py-5 px-4 rounded-xl border-gray-300 dark:border-gray-600 focus-visible:ring-blue-500 focus-visible:ring-2 transition-all bg-white/80 dark:bg-neutral-900/90 backdrop-blur-sm"
                             />
                         </div>
 
@@ -231,6 +227,6 @@ export default function Home() {
                     </p>
                 </CardContent>
             </Card>
-        </main>
+        </>
     );
 }

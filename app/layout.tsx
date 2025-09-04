@@ -6,6 +6,7 @@ import { AnimatedGridPattern } from "@/components/magicui/animated-grid-pattern"
 import { ThemeProvider } from "@/components/theme-provider";
 import Navbar from "@/components/navbar";
 import { cn } from "@/lib/utils";
+import { CMD } from "@/components/cmd";
 
 const poppins = Poppins({
     subsets: ["latin"],
@@ -35,24 +36,28 @@ export default function RootLayout({
                     enableSystem
                     disableTransitionOnChange
                 >
-                    {/* Background grid */}
                     <AnimatedGridPattern
-                        numSquares={30}
-                        maxOpacity={0.1}
-                        duration={3}
+                        numSquares={60}
+                        maxOpacity={0.4}
+                        duration={4}
+                        color="#f59e0b"
+                        randomMove={true}
+                        randomDuration={true}
+                        width={30}
+                        height={30}
                         className={cn(
-                            "[mask-image:radial-gradient(600px_circle_at_center,white,transparent)]",
-                            "sm:[mask-image:radial-gradient(600px_circle_at_center,white,transparent)]",
-                            "md:[mask-image:radial-gradient(800px_circle_at_center,white,transparent)]",
-                            "lg:[mask-image:radial-gradient(1000px_circle_at_center,white,transparent)]",
-                            "inset-x-0 inset-y-[-30%] h-[100%] skew-y-12 absolute inset-0 w-full -z-10"
+                            "[mask-image:radial-gradient(ellipse_80%_100%_at_bottom,white,transparent)]",
+                            "sm:[mask-image:radial-gradient(ellipse_80%_100%_at_bottom,white,transparent)]",
+                            "md:[mask-image:radial-gradient(ellipse_90%_100%_at_bottom,white,transparent)]",
+                            "lg:[mask-image:radial-gradient(ellipse_100%_100%_at_bottom,white,transparent)]"
                         )}
                     />
 
                     {/* Foreground content */}
+                    <CMD />
                     <div className="relative z-10 flex flex-col h-full">
                         <Navbar />
-                        <main className="flex-1 flex items-center justify-center">
+                        <main className="flex-1 flex md:items-center justify-center px-6 md:px-0 md:py-0 py-14">
                             {children}
                         </main>
                     </div>
