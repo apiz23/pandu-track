@@ -12,9 +12,10 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { Loader2, Calendar, User, Clock, CheckCircle } from "lucide-react";
+import { Loader2, User, Clock, CheckCircle } from "lucide-react";
 import { Typeession, sessions } from "@/config/session";
 import confetti from "canvas-confetti";
+import Image from "next/image";
 
 export default function Home() {
     const [matric, setMatric] = useState("");
@@ -116,16 +117,30 @@ export default function Home() {
 
     return (
         <main className="min-h-screen flex justify-center px-3 sm:px-4 py-20 relative overflow-hidden">
-            <Card className="w-full h-fit max-w-sm sm:max-w-md md:max-w-lg shadow-2xl rounded-xl overflow-hidden border-0 bg-white/80 dark:bg-neutral-900/90 backdrop-blur-sm relative z-10 p-4 sm:p-6 transition-all">
+            <Card className="w-full h-fit max-w-sm sm:max-w-md md:max-w-lg shadow-2xl rounded-xl overflow-hidden border-0 outline-2 bg-white/80 dark:bg-neutral-900/90 backdrop-blur-sm relative z-10 p-3 sm:p-6 transition-all">
                 <CardHeader className="pb-4 text-center">
-                    <div className="flex justify-center mb-3">
-                        <div className="p-3 rounded-xl border border-gray-200 dark:border-white/20 bg-white/50 dark:bg-black/50 shadow-sm transition-colors">
-                            <Calendar className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+                    <div className="flex justify-center my-5">
+                        <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 dark:bg-black/20 backdrop-blur-md shadow-lg dark:shadow-purple-500/5 transition-all duration-300 min-w-[90%] min-h-40 outline-2 outline-yellow-400">
+                            <Image
+                                src="/pandu-logo.png"
+                                alt="PANDU Tracker Logo"
+                                fill
+                                className="rounded-lg object-fill"
+                            />
                         </div>
                     </div>
-                    <CardTitle className="text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-tr from-neutral-200 via-yellow-200 to-yellow-700 bg-clip-text text-transparent">
+                    <CardTitle
+                        className="
+                            text-xl sm:text-2xl md:text-3xl font-bold 
+                            bg-gradient-to-tr 
+                            from-yellow-800 via-yellow-500 to-yellow-400 
+                            dark:from-neutral-200 dark:via-yellow-200 dark:to-yellow-700
+                            bg-clip-text text-transparent
+                        "
+                    >
                         Program Anjakan Minda Keusahawanan Graduan
                     </CardTitle>
+
                     <div className="mt-2 text-sm text-indigo-400 dark:text-indigo-300 font-medium">
                         (PANDU)
                     </div>

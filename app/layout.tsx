@@ -27,7 +27,7 @@ export default function RootLayout({
     return (
         <html lang="en" suppressHydrationWarning>
             <body
-                className={`${poppins.className} relative h-screen overflow-hidden`}
+                className={`${poppins.className} relative h-screen md:overflow-hidden`}
             >
                 <ThemeProvider
                     attribute="class"
