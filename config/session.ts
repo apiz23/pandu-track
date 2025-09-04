@@ -30,4 +30,10 @@ export const sessions: Typeession[] = [
         start: "16:00",
         end: "17:30",
     },
+    {
+        value: "Test",
+        label: "Test",
+        start: "00:00",
+        end: "23:59",
+    },
 ];
