@@ -2,7 +2,6 @@
 import { NextResponse } from "next/server";
 import { google } from "googleapis";
 import { getActiveSession } from "@/lib/getActiveSession";
-import { createClient } from "@supabase/supabase-js";
 import supabase from "@/lib/supabase";
 
 function formatTimestamp(date: Date): string {
