@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "./ui/button";
 import { RefreshCcw } from "lucide-react";
+import { getActiveSession } from "@/lib/getActiveSession";
 
 // Supabase client
 const supabase = createClient(
@@ -87,15 +88,28 @@ export function ChartPie() {
 
         setSessionData(formattedData);
 
-        // Set default active session to the first with data
-        const firstActive = formattedData.find((s) => s.participants > 0);
-        if (firstActive) setActiveSession(firstActive.session);
+        // set active session ikut masa semasa
+        const currentSession = getActiveSession();
+        if (currentSession) {
+            setActiveSession(currentSession);
+        } else {
+            // fallback: pilih first session ada data
+            const firstActive = formattedData.find((s) => s.participants > 0);
+            if (firstActive) setActiveSession(firstActive.session);
+        }
 
         setLoading(false);
     }, []);
 
     React.useEffect(() => {
         fetchData();
+        // Auto refresh every 1 minute
+        const interval = setInterval(() => {
+            const currentSession = getActiveSession();
+            if (currentSession) setActiveSession(currentSession);
+        }, 60000);
+
+        return () => clearInterval(interval);
     }, [fetchData]);
 
     const activeIndex = React.useMemo(
