@@ -1,27 +1,11 @@
 // app/api/attendance/append/route.ts
 import { NextResponse } from "next/server";
-// import { google } from "googleapis"; // ❌ Commented: Google Sheets not used
 import { getActiveSession } from "@/lib/getActiveSession";
 import supabase from "@/lib/supabase";
 
-function formatTimestamp(date: Date): string {
-    const pad = (n: number) => n.toString().padStart(2, "0");
-    return `${pad(date.getDate())}/${pad(
-        date.getMonth() + 1
-    )}/${date.getFullYear()} ${pad(date.getHours())}:${pad(
-        date.getMinutes()
-    )}:${pad(date.getSeconds())}`;
-}
-
-type AttendanceRequest = {
-    matric: string;
-    session: string;
-};
-
 export async function POST(req: Request) {
     try {
-        const body = (await req.json()) as AttendanceRequest;
-        const { matric, session: submittedSession } = body;
+        const { matric, session: submittedSession } = await req.json();
 
         if (!matric) {
             return NextResponse.json(
@@ -53,51 +37,47 @@ export async function POST(req: Request) {
             );
         }
 
-        // 3️⃣ Google Sheets Auth (❌ Commented out)
-        /*
-        const auth = new google.auth.JWT({
-            email: process.env.GOOGLE_CLIENT_EMAIL,
-            key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
-            scopes: ["https://www.googleapis.com/auth/spreadsheets"],
-        });
+        // 3️⃣ Check if matric is registered
+        const { data: registered, error: regErr } = await supabase
+            .from("pandu_std_registered")
+            .select("matric_no")
+            .eq("matric_no", matric.toUpperCase().trim())
+            .maybeSingle();
 
-        const sheets = google.sheets({ version: "v4", auth });
+        if (regErr) {
+            console.error("Supabase error:", regErr);
+            return NextResponse.json(
+                { success: false, error: "Database error" },
+                { status: 500 }
+            );
+        }
 
-        // 4️⃣ Get registered matric numbers from Google Sheet
-        const registeredRes = await sheets.spreadsheets.values.get({
-            spreadsheetId: process.env.GOOGLE_SHEET_ID,
-            range: "Form_responses!D:D", // Column D = matric
-        });
-
-        const registeredMatric =
-            registeredRes.data.values
-                ?.flat()
-                .map((m) => m.toString().toUpperCase().trim()) || [];
-
-        if (!registeredMatric.includes(matric.toUpperCase().trim())) {
+        if (!registered) {
             return NextResponse.json(
                 { success: false, error: "Matric not registered" },
                 { status: 403 }
             );
         }
 
-        // 5️⃣ Append attendance record (Google Sheets)
-        const timestamp = formatTimestamp(new Date());
+        // 4️⃣ Check if already submitted
+        const { data: existing } = await supabase
+            .from("pandu_track")
+            .select("matric_no")
+            .eq("matric_no", matric.toUpperCase().trim())
+            .eq("session", activeSession)
+            .maybeSingle();
 
-        await sheets.spreadsheets.values.append({
-            spreadsheetId: process.env.GOOGLE_SHEET_ID,
-            range: "pandu_tracking!A:C",
-            valueInputOption: "RAW",
-            requestBody: {
-                values: [
-                    [matric.toUpperCase().trim(), activeSession, timestamp],
-                ],
-            },
-        });
-        */
+        if (existing) {
+            return NextResponse.json(
+                {
+                    success: false,
+                    error: `Attendance already recorded for ${activeSession}`,
+                },
+                { status: 403 }
+            );
+        }
 
-        // 6️⃣ Insert attendance record (Supabase ✅)
-        const timestamp = formatTimestamp(new Date());
+        // 5️⃣ Insert attendance
         const { error: insertErr } = await supabase.from("pandu_track").insert({
             matric_no: matric.toUpperCase().trim(),
             session: activeSession,
@@ -105,12 +85,9 @@ export async function POST(req: Request) {
         });
 
         if (insertErr) {
-            console.error("Supabase insert error:", insertErr);
+            console.error("Insert error:", insertErr);
             return NextResponse.json(
-                {
-                    success: false,
-                    error: "Failed to record attendance in Supabase",
-                },
+                { success: false, error: "Failed to record attendance" },
                 { status: 500 }
             );
         }
@@ -119,18 +96,12 @@ export async function POST(req: Request) {
             success: true,
             message: `Attendance recorded for ${activeSession}`,
             matric: matric.toUpperCase().trim(),
-            timestamp,
+            timestamp: new Date().toISOString(),
         });
-    } catch (error: unknown) {
-        console.error("Error:", error);
-
-        let message = "Failed to record attendance";
-        if (error instanceof Error) {
-            message = error.message;
-        }
-
+    } catch (err) {
+        console.error("Error:", err);
         return NextResponse.json(
-            { success: false, error: message },
+            { success: false, error: "Unexpected error" },
             { status: 500 }
         );
     }

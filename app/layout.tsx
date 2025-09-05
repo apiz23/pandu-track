@@ -27,12 +27,10 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en" suppressHydrationWarning>
-            <body
-                className={`${poppins.className} relative h-screen md:overflow-hidden`}
-            >
+            <body className={`${poppins.className} relative h-screen`}>
                 <ThemeProvider
                     attribute="class"
-                    defaultTheme="system"
+                    defaultTheme="dark"
                     enableSystem
                     disableTransitionOnChange
                 >
@@ -46,6 +44,7 @@ export default function RootLayout({
                         width={30}
                         height={30}
                         className={cn(
+                            "fixed inset-0 -z-10",
                             "[mask-image:radial-gradient(ellipse_80%_100%_at_bottom,white,transparent)]",
                             "sm:[mask-image:radial-gradient(ellipse_80%_100%_at_bottom,white,transparent)]",
                             "md:[mask-image:radial-gradient(ellipse_90%_100%_at_bottom,white,transparent)]",
@@ -55,12 +54,8 @@ export default function RootLayout({
 
                     {/* Foreground content */}
                     <CMD />
-                    <div className="relative z-10 flex flex-col h-full">
-                        <Navbar />
-                        <main className="flex-1 flex md:items-center justify-center px-6 md:px-0 md:py-0 py-14">
-                            {children}
-                        </main>
-                    </div>
+                    <Navbar />
+                    {children}
                 </ThemeProvider>
                 <Toaster richColors expand={true} />
             </body>

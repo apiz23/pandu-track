@@ -16,13 +16,13 @@ import { Loader2, User, Clock, CheckCircle } from "lucide-react";
 import { Typeession, sessions } from "@/config/session";
 import confetti from "canvas-confetti";
 import Image from "next/image";
+import { ChartPie } from "@/components/chart-pi";
 
 export default function Home() {
     const [matric, setMatric] = useState("");
     const [loading, setLoading] = useState(false);
     const [activeSession, setActiveSession] = useState<Typeession | null>(null);
 
-    // convert "HH:mm" ke Date hari ni
     const parseTime = (time: string) => {
         const [h, m] = time.split(":").map(Number);
         const now = new Date();
@@ -30,7 +30,6 @@ export default function Home() {
         return now;
     };
 
-    // cari session aktif
     useEffect(() => {
         const checkActive = () => {
             const now = new Date();
@@ -43,7 +42,7 @@ export default function Home() {
         };
 
         checkActive();
-        const interval = setInterval(checkActive, 60 * 1000); // check every minute
+        const interval = setInterval(checkActive, 60 * 1000);
         return () => clearInterval(interval);
     }, []);
 
@@ -117,116 +116,123 @@ export default function Home() {
 
     return (
         <>
-            <Card className="w-full h-fit max-w-sm sm:max-w-md md:max-w-lg shadow-2xl rounded-xl overflow-hidden border-0 outline-2 bg-neutral-300/90 dark:bg-neutral-900/90 backdrop-blur-sm relative z-10 p-2 sm:p-6 transition-all">
-                <CardHeader className="text-center">
-                    <div className="flex justify-center my-5">
-                        <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 dark:bg-black/20 backdrop-blur-md shadow-lg dark:shadow-purple-500/5 transition-all duration-300 min-w-[90%] min-h-40 outline-2 outline-yellow-400">
-                            <Image
-                                src="/pandu-logo.png"
-                                alt="PANDU Tracker Logo"
-                                fill
-                                className="rounded-lg object-fill"
-                            />
+            <section className="flex-1 flex md:items-center justify-center px-6 md:px-0 py-14">
+                <Card className="w-full h-fit max-w-md md:max-w-lg shadow-2xl rounded-xl overflow-hidden border-0 outline-2 bg-neutral-300/90 dark:bg-neutral-900/90 backdrop-blur-sm relative z-10 p-2 sm:p-6 transition-all">
+                    <CardHeader className="text-center">
+                        <div className="flex justify-center my-5">
+                            <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 dark:bg-black/20 backdrop-blur-md shadow-lg dark:shadow-purple-500/5 transition-all duration-300 min-w-[90%] min-h-40 outline-2 outline-yellow-400">
+                                <Image
+                                    src="/pandu-logo.png"
+                                    alt="PANDU Tracker Logo"
+                                    fill
+                                    className="rounded-lg object-fill"
+                                />
+                            </div>
                         </div>
-                    </div>
-                    <CardTitle
-                        className="
+                        <CardTitle
+                            className="
                             text-xl sm:text-2xl md:text-3xl font-bold 
                             bg-gradient-to-tr 
                             from-yellow-800 via-yellow-500 to-yellow-400 
                             dark:from-neutral-200 dark:via-yellow-200 dark:to-yellow-700
                             bg-clip-text text-transparent
                         "
-                    >
-                        Program Anjakan Minda Keusahawanan Graduan
-                    </CardTitle>
-                    <CardDescription className="text-center text-gray-600 dark:text-gray-300 mt-3 transition-colors font-medium">
-                        (PANDU)
-                    </CardDescription>
-                </CardHeader>
+                        >
+                            Program Anjakan Minda Keusahawanan Graduan
+                        </CardTitle>
+                        <CardDescription className="text-center text-gray-600 dark:text-gray-300 mt-3 transition-colors font-medium">
+                            (PANDU)
+                        </CardDescription>
+                    </CardHeader>
 
-                <CardContent className="pt-2 pb-4">
-                    <form onSubmit={handleSubmit} className="space-y-5">
-                        {/* Matric Input */}
-                        <div className="space-y-2.5">
-                            <Label
-                                htmlFor="matric"
-                                className="flex items-center text-sm font-medium text-gray-900 dark:text-white pl-1"
-                            >
-                                <User className="h-4 w-4 mr-2 text-blue-600 dark:text-blue-400" />
-                                Matric Number
-                            </Label>
-                            <Input
-                                id="matric"
-                                type="text"
-                                value={matric}
-                                onChange={(e) =>
-                                    setMatric(e.target.value.toUpperCase())
-                                }
-                                placeholder="e.g., DI230066"
-                                disabled={loading}
-                                className="py-5 px-4 rounded-xl border-gray-300 dark:border-gray-600 focus-visible:ring-blue-500 focus-visible:ring-2 transition-all bg-white/80 dark:bg-neutral-900/90 backdrop-blur-sm"
-                            />
-                        </div>
+                    <CardContent className="pt-2 pb-4">
+                        <form onSubmit={handleSubmit} className="space-y-5">
+                            {/* Matric Input */}
+                            <div className="space-y-2.5">
+                                <Label
+                                    htmlFor="matric"
+                                    className="flex items-center text-sm font-medium text-gray-900 dark:text-white pl-1"
+                                >
+                                    <User className="h-4 w-4 mr-2 text-blue-600 dark:text-blue-400" />
+                                    Matric Number
+                                </Label>
+                                <Input
+                                    id="matric"
+                                    type="text"
+                                    value={matric}
+                                    onChange={(e) =>
+                                        setMatric(e.target.value.toUpperCase())
+                                    }
+                                    placeholder="e.g., DI230052"
+                                    disabled={loading}
+                                    className="py-5 px-4 rounded-xl border-gray-300 dark:border-gray-600 focus-visible:ring-blue-500 focus-visible:ring-2 transition-all bg-white/80 dark:bg-neutral-900/90 backdrop-blur-sm"
+                                />
+                            </div>
 
-                        {/* Active Session */}
-                        <div className="space-y-2.5">
-                            <Label className="flex items-center text-sm font-medium text-gray-900 dark:text-white pl-1">
-                                <Clock className="h-4 w-4 mr-2 text-blue-600 dark:text-blue-400" />
-                                Current Session
-                            </Label>
-                            <div
-                                className={`px-4 py-3 border rounded-xl ${
-                                    activeSession
-                                        ? "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800"
-                                        : "bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-700"
-                                } transition-colors flex items-center`}
+                            {/* Active Session */}
+                            <div className="space-y-2.5">
+                                <Label className="flex items-center text-sm font-medium text-gray-900 dark:text-white pl-1">
+                                    <Clock className="h-4 w-4 mr-2 text-blue-600 dark:text-blue-400" />
+                                    Current Session
+                                </Label>
+                                <div
+                                    className={`px-4 py-3 border rounded-xl ${
+                                        activeSession
+                                            ? "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800"
+                                            : "bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-700"
+                                    } transition-colors flex items-center`}
+                                >
+                                    {activeSession ? (
+                                        <>
+                                            <CheckCircle className="h-5 w-5 text-green-500 mr-2 flex-shrink-0" />
+                                            <div>
+                                                <span className="font-medium text-green-700 dark:text-green-400">
+                                                    {activeSession.label}
+                                                </span>
+                                                <span className="text-gray-600 dark:text-gray-300 ml-2">
+                                                    ({activeSession.start} -{" "}
+                                                    {activeSession.end})
+                                                </span>
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <span className="text-gray-600 dark:text-gray-300">
+                                            No active session at this time
+                                        </span>
+                                    )}
+                                </div>
+                            </div>
+
+                            <Button
+                                type="submit"
+                                disabled={loading || !activeSession}
+                                className="w-full"
+                                variant="outline"
                             >
-                                {activeSession ? (
+                                {loading ? (
                                     <>
-                                        <CheckCircle className="h-5 w-5 text-green-500 mr-2 flex-shrink-0" />
-                                        <div>
-                                            <span className="font-medium text-green-700 dark:text-green-400">
-                                                {activeSession.label}
-                                            </span>
-                                            <span className="text-gray-600 dark:text-gray-300 ml-2">
-                                                ({activeSession.start} -{" "}
-                                                {activeSession.end})
-                                            </span>
-                                        </div>
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        Processing...
                                     </>
                                 ) : (
-                                    <span className="text-gray-600 dark:text-gray-300">
-                                        No active session at this time
-                                    </span>
+                                    "Submit Attendance"
                                 )}
-                            </div>
-                        </div>
+                            </Button>
+                        </form>
 
-                        <Button
-                            type="submit"
-                            disabled={loading || !activeSession}
-                            className="w-full"
-                            variant="outline"
-                        >
-                            {loading ? (
-                                <>
-                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    Processing...
-                                </>
-                            ) : (
-                                "Submit Attendance"
-                            )}
-                        </Button>
-                    </form>
-
-                    {/* Footer note */}
-                    <p className="text-xs text-center text-gray-500 dark:text-gray-400 mt-6">
-                        Your attendance will be recorded for the current active
-                        session
-                    </p>
-                </CardContent>
-            </Card>
+                        {/* Footer note */}
+                        <p className="text-xs text-center text-gray-500 dark:text-gray-400 mt-6">
+                            Your attendance will be recorded for the current
+                            active session
+                        </p>
+                    </CardContent>
+                </Card>
+            </section>
+            <section className="min-h-screen flex items-center justify-center">
+                <div className="w-full max-w-4xl px-4">
+                    <ChartPie />
+                </div>
+            </section>
         </>
     );
 }

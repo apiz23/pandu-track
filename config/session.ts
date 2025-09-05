@@ -15,7 +15,7 @@ export const sessions: Typeession[] = [
     {
         value: "S2",
         label: "S2",
-        start: "10:30",
+        start: "10:45",
         end: "13:00",
     },
     {
