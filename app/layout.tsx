@@ -15,9 +15,9 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-    title: "PANDU Track",
+    title: "PANDU Track | UTHM",
     description:
-        "Simple attendance monitoring system for PANDU Program participants. Enter matric number to check-in after each break.",
+        "Simple attendance monitoring system for PANDU Program UTHM participants. Enter matric number to check-in for each session.",
 };
 
 export default function RootLayout({
