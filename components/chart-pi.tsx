@@ -124,18 +124,12 @@ export function ChartPie() {
     return (
         <Card
             data-chart={id}
-            className="flex flex-col border-2 shadow-2xl rounded-2xl overflow-hidden relative transition-all duration-300"
+            className="flex flex-col border-2 shadow-2xl rounded-2xl overflow-hidden relative transition-all duration-300 backdrop-blur-sm bg-gradient-to-br from-blue-400/20 via-purple-300/15 to-pink-400/10 dark:from-blue-900/30 dark:via-neutral-900/45 dark:to-neutral-800/20"
         >
-            {/* Main gradient background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 via-purple-300/15 to-pink-400/10 dark:from-blue-900/30 dark:via-neutral-900/45 dark:to-neutral-800/20 z-0" />
-
-            {/* Animated gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent dark:via-white/10 animate-gradient-x z-0" />
-
             <ChartStyle id={id} config={chartConfig} />
             <CardHeader className="flex-row items-start space-y-0 pb-4 px-6 relative z-10">
                 <div className="grid gap-1">
-                    <CardTitle className="text-xl font-semibold text-card-foreground bg-gradient-to-r from-gray-800 to-gray-600 dark:from-gray-100 dark:to-gray-300 bg-clip-text text-transparent">
+                    <CardTitle className="text-xl font-semibold text-card-foreground bg-gradient-to-r from-gray-800 to-gray-600 dark:from-gray-100 dark:to-gray-300 bg-clip-text">
                         Interactive Session Attendance
                     </CardTitle>
                     <CardDescription className="text-sm text-muted-foreground">

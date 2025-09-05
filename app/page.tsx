@@ -17,6 +17,9 @@ import { Typeession, sessions } from "@/config/session";
 import confetti from "canvas-confetti";
 import Image from "next/image";
 import { ChartPie } from "@/components/chart-pi";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
+import Lenis from "@studio-freight/lenis";
 
 export default function Home() {
     const [matric, setMatric] = useState("");
@@ -29,6 +32,18 @@ export default function Home() {
         now.setHours(h, m, 0, 0);
         return now;
     };
+
+    useEffect(() => {
+        const lenis = new Lenis();
+        lenis.on("scroll", ScrollTrigger.update);
+
+        gsap.ticker.add((time) => {
+            lenis.raf(time * 1000);
+        });
+
+        gsap.ticker.lagSmoothing(0);
+        gsap.registerPlugin(ScrollTrigger);
+    }, []);
 
     useEffect(() => {
         const checkActive = () => {
@@ -117,7 +132,7 @@ export default function Home() {
     return (
         <>
             <section className="flex-1 flex md:items-center justify-center px-6 md:px-0 py-14">
-                <Card className="w-full h-fit max-w-md md:max-w-lg shadow-2xl rounded-xl overflow-hidden border-0 outline-2 bg-neutral-300/90 dark:bg-neutral-900/90 backdrop-blur-sm relative z-10 p-2 sm:p-6 transition-all">
+                <Card className="w-full h-fit max-w-md md:max-w-lg shadow-2xl rounded-xl overflow-hidden border-0 outline-2 bg-gradient-to-tr from-blue-400/20 via-purple-400/15 to-pink-400/10 dark:from-blue-900/30 dark:via-neutral-900/45 dark:to-neutral-800/20 backdrop-blur-sm relative z-10 p-2 sm:p-6 transition-all">
                     <CardHeader className="text-center">
                         <div className="flex justify-center my-5">
                             <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 dark:bg-black/20 backdrop-blur-md shadow-lg dark:shadow-purple-500/5 transition-all duration-300 min-w-[90%] min-h-40 outline-2 outline-yellow-400">
@@ -129,19 +144,17 @@ export default function Home() {
                                 />
                             </div>
                         </div>
-                        <CardTitle
-                            className="
-                            text-xl sm:text-2xl md:text-3xl font-bold 
-                            bg-gradient-to-tr 
-                            from-yellow-800 via-yellow-500 to-yellow-400 
-                            dark:from-neutral-200 dark:via-yellow-200 dark:to-yellow-700
-                            bg-clip-text text-transparent
-                        "
-                        >
+                        <CardTitle className=" text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-tr from-yellow-800 via-yellow-500 to-yellow-400 dark:from-neutral-200 dark:via-yellow-200 dark:to-yellow-700 bg-clip-text text-transparent">
                             Program Anjakan Minda Keusahawanan Graduan
                         </CardTitle>
                         <CardDescription className="text-center text-gray-600 dark:text-gray-300 mt-3 transition-colors font-medium">
                             (PANDU)
+                        </CardDescription>
+                        <CardDescription className="text-center text-gray-500 dark:text-gray-400 mt-1 text-sm transition-colors">
+                            For{" "}
+                            <span className="font-semibold">
+                                UTHM students only
+                            </span>
                         </CardDescription>
                     </CardHeader>
 

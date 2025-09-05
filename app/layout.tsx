@@ -15,7 +15,7 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-    title: "PANDU Tracker",
+    title: "PANDU Track",
     description:
         "Simple attendance monitoring system for PANDU Program participants. Enter matric number to check-in after each break.",
 };
@@ -31,7 +31,7 @@ export default function RootLayout({
                 <ThemeProvider
                     attribute="class"
                     defaultTheme="dark"
-                    enableSystem
+                    enableSystem={false}
                     disableTransitionOnChange
                 >
                     <AnimatedGridPattern

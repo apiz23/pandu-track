@@ -8,7 +8,7 @@ export default function Navbar() {
             <div className="max-w-6xl mx-auto flex items-center justify-between px-4 py-3 sm:px-6">
                 {/* Website Title */}
                 <h1 className="text-2xl font-bold text-black dark:text-white">
-                    PANDU Tracker
+                    PANDU Track
                 </h1>
 
                 {/* Theme Toggle */}
