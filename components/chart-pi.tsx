@@ -26,6 +26,8 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { Button } from "./ui/button";
+import { RefreshCcw } from "lucide-react";
 
 // Supabase client
 const supabase = createClient(
@@ -48,48 +50,53 @@ export function ChartPie() {
         { session: string; participants: number; fill: string }[]
     >([]);
     const [activeSession, setActiveSession] = React.useState("S1");
+    const [loading, setLoading] = React.useState(false);
+
+    const fetchData = React.useCallback(async () => {
+        setLoading(true);
+        const { data, error } = await supabase
+            .from("pandu_track")
+            .select("session");
+        if (error) {
+            console.error(error);
+            setLoading(false);
+            return;
+        }
+
+        // Count participants
+        const counts: Record<string, number> = {
+            S1: 0,
+            S2: 0,
+            S3: 0,
+            S4: 0,
+            Test: 0,
+        };
+        data.forEach((row) => {
+            if (counts[row.session] !== undefined) {
+                counts[row.session]++;
+            }
+        });
+
+        const formattedData = Object.entries(counts).map(
+            ([session, count], i) => ({
+                session,
+                participants: count,
+                fill: `var(--chart-${i + 1})`,
+            })
+        );
+
+        setSessionData(formattedData);
+
+        // Set default active session to the first with data
+        const firstActive = formattedData.find((s) => s.participants > 0);
+        if (firstActive) setActiveSession(firstActive.session);
+
+        setLoading(false);
+    }, []);
 
     React.useEffect(() => {
-        const fetchData = async () => {
-            const { data, error } = await supabase
-                .from("pandu_track")
-                .select("session");
-            if (error) {
-                console.error(error);
-                return;
-            }
-
-            // Count participants
-            const counts: Record<string, number> = {
-                S1: 0,
-                S2: 0,
-                S3: 0,
-                S4: 0,
-                Test: 0,
-            };
-            data.forEach((row) => {
-                if (counts[row.session] !== undefined) {
-                    counts[row.session]++;
-                }
-            });
-
-            const formattedData = Object.entries(counts).map(
-                ([session, count], i) => ({
-                    session,
-                    participants: count,
-                    fill: `var(--chart-${i + 1})`,
-                })
-            );
-
-            setSessionData(formattedData);
-
-            // Set default active session to the first with data
-            const firstActive = formattedData.find((s) => s.participants > 0);
-            if (firstActive) setActiveSession(firstActive.session);
-        };
-
         fetchData();
-    }, []);
+    }, [fetchData]);
 
     const activeIndex = React.useMemo(
         () => sessionData.findIndex((item) => item.session === activeSession),
@@ -103,7 +110,7 @@ export function ChartPie() {
     return (
         <Card
             data-chart={id}
-            className="flex flex-col border-2 shadow-2xl rounded-2xl overflow-hidden relative transition-all duration-300 "
+            className="flex flex-col border-2 shadow-2xl rounded-2xl overflow-hidden relative transition-all duration-300"
         >
             {/* Main gradient background */}
             <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 via-purple-300/15 to-pink-400/10 dark:from-blue-900/30 dark:via-neutral-900/45 dark:to-neutral-800/20 z-0" />
@@ -112,7 +119,7 @@ export function ChartPie() {
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent dark:via-white/10 animate-gradient-x z-0" />
 
             <ChartStyle id={id} config={chartConfig} />
-            <CardHeader className="flex-row items-start space-y-0 pb-4 pt-6 px-6 relative z-10">
+            <CardHeader className="flex-row items-start space-y-0 pb-4 px-6 relative z-10">
                 <div className="grid gap-1">
                     <CardTitle className="text-xl font-semibold text-card-foreground bg-gradient-to-r from-gray-800 to-gray-600 dark:from-gray-100 dark:to-gray-300 bg-clip-text text-transparent">
                         Interactive Session Attendance
@@ -121,43 +128,63 @@ export function ChartPie() {
                         PANDU Tracker - Participant distribution across sessions
                     </CardDescription>
                 </div>
-                <Select value={activeSession} onValueChange={setActiveSession}>
-                    <SelectTrigger
-                        className="ml-auto h-9 w-[140px] rounded-lg border border-gray-300/50 bg-white/80 shadow-sm transition-all hover:bg-white focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-2 backdrop-blur-sm dark:border-gray-600 dark:bg-gray-800/80 dark:hover:bg-gray-800/90 dark:focus:ring-blue-400/50 z-10"
-                        aria-label="Select a session"
+                <div className="ml-auto flex items-center gap-2 mt-4">
+                    <Select
+                        value={activeSession}
+                        onValueChange={setActiveSession}
                     >
-                        <SelectValue placeholder="Select session" />
-                    </SelectTrigger>
-                    <SelectContent
-                        align="end"
-                        className="rounded-xl border bg-white/95 backdrop-blur-md dark:bg-gray-900/95 dark:border-gray-700 p-2 shadow-md"
+                        <SelectTrigger className="h-9 w-[140px] rounded-lg border border-gray-300/50 bg-white/80 shadow-sm transition-all hover:bg-white focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-2 backdrop-blur-sm dark:border-gray-600 dark:bg-gray-800/80 dark:hover:bg-gray-800/90 dark:focus:ring-blue-400/50 z-10">
+                            <SelectValue placeholder="Select session" />
+                        </SelectTrigger>
+                        <SelectContent
+                            align="end"
+                            className="rounded-xl border bg-white/95 backdrop-blur-md dark:bg-gray-900/95 dark:border-gray-700 p-2 shadow-md"
+                        >
+                            {sessions.map((key) => {
+                                const config =
+                                    chartConfig[
+                                        key as keyof typeof chartConfig
+                                    ];
+                                if (!config) return null;
+                                return (
+                                    <SelectItem
+                                        key={key}
+                                        value={key}
+                                        className="rounded-lg py-2 [&_span]:flex transition-all hover:bg-blue-50/50 dark:hover:bg-blue-950/50"
+                                    >
+                                        <div className="flex items-center gap-2 text-xs">
+                                            <span
+                                                className="flex h-3 w-3 shrink-0 rounded-full shadow-sm"
+                                                style={{
+                                                    backgroundColor: `var(--chart-${
+                                                        sessions.indexOf(key) +
+                                                        1
+                                                    })`,
+                                                }}
+                                            />
+                                            {config?.label}
+                                        </div>
+                                    </SelectItem>
+                                );
+                            })}
+                        </SelectContent>
+                    </Select>
+
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={fetchData}
+                        disabled={loading}
+                        className="rounded-lg"
+                        title="Refresh data"
                     >
-                        {sessions.map((key) => {
-                            const config =
-                                chartConfig[key as keyof typeof chartConfig];
-                            if (!config) return null;
-                            return (
-                                <SelectItem
-                                    key={key}
-                                    value={key}
-                                    className="rounded-lg py-2 [&_span]:flex transition-all hover:bg-blue-50/50 dark:hover:bg-blue-950/50"
-                                >
-                                    <div className="flex items-center gap-2 text-xs">
-                                        <span
-                                            className="flex h-3 w-3 shrink-0 rounded-full shadow-sm"
-                                            style={{
-                                                backgroundColor: `var(--chart-${
-                                                    sessions.indexOf(key) + 1
-                                                })`,
-                                            }}
-                                        />
-                                        {config?.label}
-                                    </div>
-                                </SelectItem>
-                            );
-                        })}
-                    </SelectContent>
-                </Select>
+                        <RefreshCcw
+                            className={`h-4 w-4 ${
+                                loading ? "animate-spin" : ""
+                            }`}
+                        />
+                    </Button>
+                </div>
             </CardHeader>
             <CardContent className="flex flex-1 justify-center pb-6 px-6 relative z-10">
                 <ChartContainer
