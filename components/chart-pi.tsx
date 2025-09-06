@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "./ui/button";
 import { RefreshCcw } from "lucide-react";
-import { getActiveSession } from "@/lib/getActiveSession";
+import { sessions } from "@/config/session";
 
 // Supabase client
 const supabase = createClient(
@@ -44,6 +44,23 @@ const chartConfig = {
     S4: { label: "Session 4", color: "var(--chart-4)" },
     Test: { label: "Test", color: "var(--chart-5)" },
 } satisfies ChartConfig;
+
+const parseTime = (time: string) => {
+    const [h, m] = time.split(":").map(Number);
+    const now = new Date();
+    now.setHours(h, m, 0, 0);
+    return now;
+};
+
+const getActiveSessionByTime = () => {
+    const now = new Date();
+    const found = sessions.find((s) => {
+        const start = parseTime(s.start);
+        const end = parseTime(s.end);
+        return now >= start && now <= end;
+    });
+    return found?.value || "Test";
+};
 
 export function ChartPie() {
     const id = "pie-interactive-sessions";
@@ -73,9 +90,7 @@ export function ChartPie() {
             Test: 0,
         };
         data.forEach((row) => {
-            if (counts[row.session] !== undefined) {
-                counts[row.session]++;
-            }
+            if (counts[row.session] !== undefined) counts[row.session]++;
         });
 
         const formattedData = Object.entries(counts).map(
@@ -88,25 +103,17 @@ export function ChartPie() {
 
         setSessionData(formattedData);
 
-        // set active session ikut masa semasa
-        const currentSession = getActiveSession();
-        if (currentSession) {
-            setActiveSession(currentSession);
-        } else {
-            // fallback: pilih first session ada data
-            const firstActive = formattedData.find((s) => s.participants > 0);
-            if (firstActive) setActiveSession(firstActive.session);
-        }
+        const currentSession = getActiveSessionByTime();
+        setActiveSession(currentSession);
 
         setLoading(false);
     }, []);
 
     React.useEffect(() => {
         fetchData();
-        // Auto refresh every 1 minute
         const interval = setInterval(() => {
-            const currentSession = getActiveSession();
-            if (currentSession) setActiveSession(currentSession);
+            const currentSession = getActiveSessionByTime();
+            setActiveSession(currentSession);
         }, 60000);
 
         return () => clearInterval(interval);
@@ -116,7 +123,8 @@ export function ChartPie() {
         () => sessionData.findIndex((item) => item.session === activeSession),
         [activeSession, sessionData]
     );
-    const sessions = React.useMemo(
+
+    const sessionsList = React.useMemo(
         () => sessionData.map((item) => item.session),
         [sessionData]
     );
@@ -148,7 +156,7 @@ export function ChartPie() {
                             align="end"
                             className="rounded-xl border bg-white/95 backdrop-blur-md dark:bg-gray-900/95 dark:border-gray-700 p-2 shadow-md"
                         >
-                            {sessions.map((key) => {
+                            {sessionsList.map((key) => {
                                 const config =
                                     chartConfig[
                                         key as keyof typeof chartConfig
@@ -165,8 +173,9 @@ export function ChartPie() {
                                                 className="flex h-3 w-3 shrink-0 rounded-full shadow-sm"
                                                 style={{
                                                     backgroundColor: `var(--chart-${
-                                                        sessions.indexOf(key) +
-                                                        1
+                                                        sessionsList.indexOf(
+                                                            key
+                                                        ) + 1
                                                     })`,
                                                 }}
                                             />
