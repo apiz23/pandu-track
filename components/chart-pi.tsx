@@ -3,8 +3,6 @@
 import * as React from "react";
 import { Label, Pie, PieChart, Sector } from "recharts";
 import { PieSectorDataItem } from "recharts/types/polar/Pie";
-import { createClient } from "@supabase/supabase-js";
-
 import {
     Card,
     CardContent,
@@ -29,12 +27,7 @@ import {
 import { Button } from "./ui/button";
 import { RefreshCcw } from "lucide-react";
 import { sessions } from "@/config/session";
-
-// Supabase client
-const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+import supabase from "@/lib/supabase";
 
 const chartConfig = {
     participants: { label: "Participants" },
@@ -42,7 +35,6 @@ const chartConfig = {
     S2: { label: "Session 2", color: "var(--chart-2)" },
     S3: { label: "Session 3", color: "var(--chart-3)" },
     S4: { label: "Session 4", color: "var(--chart-4)" },
-    Test: { label: "Test", color: "var(--chart-5)" },
 } satisfies ChartConfig;
 
 const parseTime = (time: string) => {
@@ -59,7 +51,7 @@ const getActiveSessionByTime = () => {
         const end = parseTime(s.end);
         return now >= start && now <= end;
     });
-    return found?.value || "Test";
+    return found?.value || "S1";
 };
 
 export function ChartPie() {
@@ -81,7 +73,6 @@ export function ChartPie() {
             return;
         }
 
-        // Count participants
         const counts: Record<string, number> = {
             S1: 0,
             S2: 0,
