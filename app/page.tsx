@@ -20,6 +20,7 @@ import { ChartPie } from "@/components/chart-pi";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 import Lenis from "@studio-freight/lenis";
+import { getActiveSession } from "@/lib/getActiveSession";
 
 export default function Home() {
     const [matric, setMatric] = useState("");
@@ -47,19 +48,16 @@ export default function Home() {
 
     useEffect(() => {
         const checkActive = () => {
-            const now = new Date();
-            const found = sessions.find((s) => {
-                const start = parseTime(s.start);
-                const end = parseTime(s.end);
-                return now >= start && now <= end;
-            });
-            setActiveSession(found || null);
+            const sessionValue = getActiveSession();
+            const found = sessions.find((s) => s.value === sessionValue) || null;
+            setActiveSession(found);
         };
-
+    
         checkActive();
         const interval = setInterval(checkActive, 60 * 1000);
         return () => clearInterval(interval);
     }, []);
+    
 
     const triggerConfetti = () => {
         const end = Date.now() + 3 * 1000;
